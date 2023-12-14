@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-set -euo pipefail
+set -euox pipefail
 
 FLAVOR=$(grep PRETTY_NAME /etc/os-release | cut -d'"' -f 2)
 if [[ $FLAVOR != "Amazon Linux 2" ]]; then
@@ -82,6 +81,7 @@ declare -a PKGS=(
     jupyterlab-execute-time
     jupyterlab-skip-traceback
     jupyterlab-unfold
+    jupytext
     stickyland
     ipython_genutils  # https://github.com/jupyter/nbdime/issues/621
 
@@ -93,6 +93,7 @@ declare -a PKGS=(
     "jupyterlab_code_formatter!=1.6.0"
     black
     isort
+    ruff
 )
 $BIN_DIR/pip install --no-cache-dir --upgrade pip  # Let us welcome colorful pip.
 $BIN_DIR/pip install --no-cache-dir --upgrade "${PKGS[@]}"
@@ -465,28 +466,30 @@ try_append() {
 
 touch ~/.jupyter/jupyter_server_config.py
 
-try_append \
-    c.NotebookApp.terminado_settings \
-    "{'shell_command': ['/bin/bash', '-l']}" \
-    "Changed shell to /bin/bash" \
-    notebook
+# try_append \
+#     c.NotebookApp.terminado_settings \
+#     "{'shell_command': ['/bin/bash', '-l']}" \
+#     "Changed shell to /bin/bash" \
+#     notebook
 
-try_append \
-    c.ServerApp.terminado_settings \
-    "{'shell_command': ['/bin/bash', '-l']}" \
-    "Changed shell to /bin/bash" \
-    server
+# try_append \
+#     c.ServerApp.terminado_settings \
+#     "{'shell_command': ['/bin/bash', '-l']}" \
+#     "Changed shell to /bin/bash" \
+#     server
 
-try_append \
-    c.EnvironmentKernelSpecManager.conda_env_dirs \
-    "['/home/ec2-user/anaconda3/envs', '/home/ec2-user/SageMaker/envs']" \
-    "Register additional prefixes for conda environments" \
-    notebook
+# try_append \
+#     c.EnvironmentKernelSpecManager.conda_env_dirs \
+#     "['/home/ec2-user/anaconda3/envs', '/home/ec2-user/SageMaker/envs']" \
+#     "Register additional prefixes for conda environments" \
+#     notebook
 
-try_append \
-    c.EnvironmentKernelSpecManager.conda_env_dirs \
-    "['/home/ec2-user/anaconda3/envs', '/home/ec2-user/SageMaker/envs']" \
-    "Register additional prefixes for conda environments" \
-    server
+# try_append \
+#     c.EnvironmentKernelSpecManager.conda_env_dirs \
+#     "['/home/ec2-user/anaconda3/envs', '/home/ec2-user/SageMaker/envs']" \
+#     "Register additional prefixes for conda environments" \
+#     server
 
 sudo systemctl restart jupyter-server
+
+echo "Restart successful"
